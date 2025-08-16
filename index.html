@@ -48,583 +48,667 @@
 		@keyframes pulse { 0%, 100% { transform:scale(1); } 50% { transform:scale(1.1); } }
 		@keyframes bounce { 0%, 100% { transform:scale(1); } 50% { transform:scale(1.2); } }
 		.countdown-overlay { position:fixed; inset:0; background:#000a; display:none; align-items:center; justify-content:center; z-index:100; flex-direction:column; }
-		.countdown-overlay.active { display:flex; animation:fade .3s ease; }
-		.countdown-number { font-size:8rem; font-weight:900; text-shadow:0 8px 30px #000; color:#6366f1; animation:pulse .8s ease-in-out; }
-		.round-result-overlay { position:fixed; inset:0; background:#000a; display:none; align-items:center; justify-content:center; z-index:100; flex-direction:column; }
-		.round-result-overlay.active { display:flex; animation:fade .5s ease; }
-		.round-result { text-align:center; padding:2rem; background:#1e293b; border-radius:20px; border:2px solid #6366f1; max-width:400px; }
-		.round-result h3 { font-size:2rem; margin:.5rem 0; }
-		.round-result .moves { display:flex; gap:2rem; justify-content:center; align-items:center; margin:1rem 0; }
-		.round-result .move { display:flex; flex-direction:column; align-items:center; gap:.5rem; }
-		.round-result .move-emoji { font-size:3rem; }
-		.round-result .move-label { font-size:.9rem; opacity:.8; }
-		
-		/* Canvas overlay for bounding boxes */
-		#bbox-canvas { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:10; }
-		
-		/* Mobile responsive design */
+		.countdown-overlay.active { display:flex; }
+		.countdown-number { font-size:8rem; font-weight:900; color:#10b981; text-shadow:0 0 30px #10b981; animation:bounce 1s ease-in-out; }
+		.countdown-text { font-size:1.5rem; margin-top:1rem; color:#f1f5f9; opacity:0.8; }
+		.round-result-overlay { position:fixed; inset:0; background:#000a; display:none; align-items:center; justify-content:center; z-index:90; flex-direction:column; }
+		.round-result-overlay.active { display:flex; animation:fade .4s ease; }
+		.round-result-content { text-align:center; }
+		.round-result-moves { font-size:4rem; margin:1rem 0; }
+		.round-result-text { font-size:2rem; margin:0.5rem 0; color:#f1f5f9; }
+		.chip { display:inline-block; padding:.35rem .65rem; border-radius:30px; background:#334155; font-size:.65rem; letter-spacing:.5px; text-transform:uppercase; margin-right:.4rem; }
+		footer { padding:1rem; font-size:.65rem; text-align:center; opacity:.5; }
+		.hidden { display:none !important; }
+
+		/* Mobile Responsive Styles */
 		@media (max-width: 768px) {
-			.layout { flex-direction:column; gap:.8rem; }
-			.panel { min-height:250px; }
-			.controls { flex-direction:column; align-items:stretch; gap:.8rem; }
-			.game-buttons { justify-content:center; }
-			.game-meta { text-align:center; margin:0; }
-			header { padding:.8rem 1rem; }
-			h1 { font-size:1.1rem; }
-			main { padding:.8rem; gap:.8rem; }
-			.computer-anim { font-size:4rem; }
-			.winner-banner h2 { font-size:2rem; }
-			.countdown-number { font-size:6rem; }
-			.round-result h3 { font-size:1.5rem; }
-			.round-result .move-emoji { font-size:2.5rem; }
-			.round-result .moves { gap:1.5rem; }
+			body { font-size:14px; }
+			header { padding:.75rem 1rem; flex-direction:column; gap:.5rem; text-align:center; }
+			h1 { font-size:1rem; }
+			main { padding:.75rem; gap:.75rem; }
+			
+			.controls { 
+				flex-direction:column; 
+				align-items:stretch; 
+				gap:.75rem; 
+				padding:.75rem;
+				text-align:center;
+			}
+			.rounds-control { 
+				align-items:center;
+			}
+			.game-buttons { 
+				flex-direction:column;
+				gap:.5rem;
+				align-items:stretch;
+			}
+			.game-meta { 
+				margin-left:0 !important; 
+				text-align:center;
+				font-size:.7rem;
+			}
+			
+			button { 
+				padding:.75rem 1.5rem; 
+				font-size:.9rem; 
+				width:100%; 
+				max-width:280px;
+				justify-content:center;
+			}
+			
+			.layout { 
+				flex-direction:column; 
+				gap:.75rem; 
+				min-height:auto;
+			}
+			.panel { 
+				min-height:250px; 
+			}
+			
+			.computer-anim { 
+				font-size:4rem; 
+			}
+			
+			.scoreboard { 
+				grid-template-columns:repeat(2,1fr); 
+				gap:.5rem; 
+				margin-top:.75rem;
+			}
+			.scorebox { 
+				padding:.75rem .5rem; 
+			}
+			.scorebox span.label { 
+				font-size:.6rem; 
+			}
+			.big { 
+				font-size:1.2rem; 
+			}
+			
+			.status { 
+				padding:.75rem; 
+				font-size:.85rem; 
+				min-height:auto;
+				text-align:center;
+			}
+			
+			.winner-banner h2 { 
+				font-size:2rem; 
+				text-align:center;
+				padding:0 1rem;
+			}
+			
+			.countdown-number { 
+				font-size:6rem; 
+			}
+			.countdown-text { 
+				font-size:1.2rem; 
+			}
+			
+			.round-result-moves { 
+				font-size:3rem; 
+			}
+			.round-result-text { 
+				font-size:1.5rem; 
+				padding:0 1rem;
+				text-align:center;
+			}
 		}
-		
+
 		@media (max-width: 480px) {
-			.scoreboard { grid-template-columns:1fr 1fr; gap:.6rem; }
-			.computer-anim { font-size:3rem; }
-			.countdown-number { font-size:5rem; }
-			.round-result { padding:1.5rem; max-width:320px; }
+			header { padding:.5rem; }
+			h1 { font-size:.9rem; }
+			main { padding:.5rem; gap:.5rem; }
+			
+			.controls { padding:.5rem; gap:.5rem; }
+			.game-buttons { 
+				gap:.4rem;
+			}
+			button { 
+				padding:.6rem 1.2rem; 
+				font-size:.8rem; 
+			}
+			
+			.panel { 
+				min-height:200px; 
+			}
+			
+			.computer-anim { 
+				font-size:3rem; 
+			}
+			
+			.scoreboard { 
+				grid-template-columns:1fr; 
+				gap:.4rem;
+			}
+			.scorebox { 
+				padding:.6rem .4rem; 
+				display:flex;
+				justify-content:space-between;
+				align-items:center;
+			}
+			.scorebox span.label { 
+				font-size:.55rem; 
+				margin-bottom:0;
+			}
+			.big { 
+				font-size:1.1rem; 
+			}
+			
+			.status { 
+				padding:.6rem; 
+				font-size:.8rem; 
+			}
+			
+			.winner-banner h2 { 
+				font-size:1.5rem; 
+			}
+			
+			.countdown-number { 
+				font-size:4rem; 
+			}
+			.countdown-text { 
+				font-size:1rem; 
+			}
+			
+			.round-result-moves { 
+				font-size:2.5rem; 
+			}
+			.round-result-text { 
+				font-size:1.2rem; 
+			}
 		}
-		
-		/* Landscape orientation on mobile */
-		@media (max-height: 500px) and (orientation: landscape) {
-			.layout { flex-direction:row; }
-			.panel { min-height:200px; }
-			.computer-anim { font-size:3rem; }
-			.countdown-number { font-size:4rem; }
+
+		/* Landscape mobile optimization */
+		@media (max-height: 600px) and (orientation: landscape) {
+			.layout { 
+				flex-direction:row; 
+				min-height:300px;
+			}
+			.panel { 
+				min-height:300px; 
+			}
+			.scoreboard { 
+				grid-template-columns:repeat(3,1fr); 
+			}
+			.countdown-number { 
+				font-size:4rem; 
+			}
+			.round-result-moves { 
+				font-size:2rem; 
+			}
+			.round-result-text { 
+				font-size:1rem; 
+			}
 		}
 	</style>
 </head>
 <body>
 	<header>
-		<h1>🎮 Rock Paper Scissors</h1>
-		<div style="font-size:.75rem; opacity:.7;">Powered by YOLO AI</div>
+		<h1>Rock • Paper • Scissors • YOLO</h1>
+		<div>
+			<button id="btnReset" class="secondary" disabled>Reset</button>
+		</div>
 	</header>
-	
 	<main>
-		<div class="controls">
+		<section class="controls">
 			<div class="rounds-control">
 				<label for="rounds">Rounds</label>
-				<input type="number" id="rounds" value="3" min="1" max="10" />
+				<input type="number" id="rounds" min="1" max="15" value="3" />
 			</div>
-			
 			<div class="game-buttons">
-				<button id="startBtn">🎯 Start Game</button>
-				<button id="resetBtn" class="secondary">🔄 Reset</button>
+				<button id="btnStart">Play vs Computer</button>
+				<button id="btnStop" class="danger" disabled>Stop</button>
 			</div>
-			
-			<div class="game-meta">
-				<div>Confidence threshold: 50%</div>
-				<div>Detection: Auto mode</div>
+			<div id="gameMeta" class="game-meta">
+				<div>Model: <span id="modelStatus">Loading...</span></div>
+				<div>Device: <span id="deviceInfo">Detecting...</span></div>
 			</div>
-		</div>
-		
-		<div class="layout">
-			<div class="panel">
-				<h2>📹 Your Camera</h2>
-				<div class="video-wrapper">
-					<video id="video" autoplay playsinline></video>
-					<canvas id="bbox-canvas"></canvas>
+		</section>
+			<section class="layout">
+				<div class="panel">
+					<h2>Player (Camera)</h2>
+					<div class="video-wrapper">
+						<video id="video" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;background:#020617;"></video>
+						<canvas id="overlayCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:10;"></canvas>
+						<canvas id="frameCanvas" class="hidden"></canvas>
+					</div>
 				</div>
-			</div>
-			
-			<div class="panel">
-				<h2>🤖 Computer</h2>
-				<div class="computer-anim" id="computerDisplay">Ready to play!</div>
-			</div>
-		</div>
-		
-		<div class="scoreboard">
-			<div class="scorebox">
-				<span class="label">Player Score</span>
-				<div class="big" id="playerScore">0</div>
-			</div>
-			<div class="scorebox">
-				<span class="label">Computer Score</span>
-				<div class="big" id="computerScore">0</div>
-			</div>
-			<div class="scorebox">
-				<span class="label">Current Round</span>
-				<div class="big" id="currentRound">0</div>
-			</div>
-			<div class="scorebox">
-				<span class="label">Last Move</span>
-				<div class="big" id="lastMove">-</div>
-			</div>
-		</div>
-		
-		<div class="status" id="status">
-			Click "Start Game" to begin. Make sure your camera is working!
-		</div>
+				<div class="panel">
+					<h2>Computer</h2>
+					<div class="video-wrapper">
+						<div id="computerAnim" class="computer-anim">🤖</div>
+					</div>
+				</div>
+			</section>
+		<section class="scoreboard" id="scoreboard">
+			<div class="scorebox"><span class="label">Player Score</span><span class="big" id="pScore">0</span></div>
+			<div class="scorebox"><span class="label">Computer Score</span><span class="big" id="cScore">0</span></div>
+			<div class="scorebox"><span class="label">Round</span><span class="big" id="roundInfo">-</span></div>
+			<div class="scorebox"><span class="label">Player Move</span><span class="big" id="pMove">-</span></div>
+			<div class="scorebox"><span class="label">Computer Move</span><span class="big" id="cMove">-</span></div>
+			<div class="scorebox"><span class="label">Round Winner</span><span class="big" id="rWinner">-</span></div>
+		</section>
+		<div class="status" id="statusBar">Idle - Press "Play vs Computer" to start.</div>
 	</main>
-	
-	<!-- Winner announcement overlay -->
-	<div class="winner-banner" id="winnerBanner">
-		<div class="confetti" id="confetti"></div>
-		<h2 id="winnerText">🎉 You Win!</h2>
-		<p id="winnerSubtext">Final score: 3-2</p>
-		<button onclick="closeWinnerBanner()" style="margin-top:1rem;">Play Again</button>
+	<div class="winner-banner" id="winnerModal">
+		<h2 id="winnerText"></h2>
+		<button onclick="hideWinner();" class="secondary">Close</button>
 	</div>
-	
-	<!-- Countdown overlay -->
 	<div class="countdown-overlay" id="countdownOverlay">
 		<div class="countdown-number" id="countdownNumber">3</div>
-		<p style="font-size:1.2rem; margin-top:1rem; opacity:.8;">Get ready...</p>
+		<div class="countdown-text">Get Ready!</div>
 	</div>
-	
-	<!-- Round result overlay -->
 	<div class="round-result-overlay" id="roundResultOverlay">
-		<div class="round-result">
-			<h3 id="roundResultTitle">Round 1 Result</h3>
-			<div class="moves">
-				<div class="move">
-					<div class="move-emoji" id="playerMoveEmoji">✊</div>
-					<div class="move-label">You</div>
-				</div>
-				<div style="font-size:2rem; opacity:.6;">vs</div>
-				<div class="move">
-					<div class="move-emoji" id="computerMoveEmoji">✋</div>
-					<div class="move-label">Computer</div>
-				</div>
-			</div>
-			<p id="roundResultText">Computer wins this round!</p>
-			<button onclick="closeRoundResult()" style="margin-top:1rem;">Continue</button>
+		<div class="round-result-content">
+			<div class="round-result-moves" id="roundResultMoves">✊ vs ✋</div>
+			<div class="round-result-text" id="roundResultWinner">Player Wins!</div>
+			<div class="round-result-text" id="roundResultScore">Score: 1 - 0</div>
 		</div>
 	</div>
-
+	<div class="confetti" id="confetti"></div>
+	<footer>Prototype UI for YOLO-powered Rock Paper Scissors.</footer>
 	<script>
-		// Configuration
-		const CONFIDENCE_THRESHOLD = 0.5;
-		const DETECTION_INTERVAL = 500;
-		const COUNTDOWN_DURATION = 3;
-		
-		// Game state
+		const btnStart = document.getElementById('btnStart');
+		const btnStop = document.getElementById('btnStop');
+		const btnReset = document.getElementById('btnReset');
+		const roundsInput = document.getElementById('rounds');
+		const videoEl = document.getElementById('video');
+		const frameCanvas = document.getElementById('frameCanvas');
+		const overlayCanvas = document.getElementById('overlayCanvas');
+		const computerAnim = document.getElementById('computerAnim');
+		const statusBar = document.getElementById('statusBar');
+		const pScore = document.getElementById('pScore');
+		const cScore = document.getElementById('cScore');
+		const roundInfo = document.getElementById('roundInfo');
+		const pMove = document.getElementById('pMove');
+		const cMove = document.getElementById('cMove');
+		const rWinner = document.getElementById('rWinner');
+		const winnerModal = document.getElementById('winnerModal');
+		const winnerText = document.getElementById('winnerText');
+		const countdownOverlay = document.getElementById('countdownOverlay');
+		const countdownNumber = document.getElementById('countdownNumber');
+		const roundResultOverlay = document.getElementById('roundResultOverlay');
+		const roundResultMoves = document.getElementById('roundResultMoves');
+		const roundResultWinner = document.getElementById('roundResultWinner');
+		const roundResultScore = document.getElementById('roundResultScore');
+		const confettiBox = document.getElementById('confetti');
+		const modelStatus = document.getElementById('modelStatus');
+		const deviceInfo = document.getElementById('deviceInfo');
+
+		let poller = null;
 		let gameActive = false;
-		let playerScore = 0;
-		let computerScore = 0;
-		let currentRound = 0;
-		let maxRounds = 3;
-		let roundInProgress = false;
+		let roundsToPlay = 3;
+		let currentRound = 1;
+		let playerScoreVal = 0;
+		let computerScoreVal = 0;
+		let capturing = false;
 		let lastDetectionTime = 0;
 		let currentPlayerMove = null;
 		let detectionCooldown = false;
 		
-		// ⚠️ REPLACE THIS URL WITH YOUR HUGGING FACE SPACE URL
-		const API_BASE = 'https://ahmedhazemelabady-rock-paper-scissor.hf.space';
-		
+		// const API_BASE = window.location.hostname === 'localhost' ? 
+		// 	'http://localhost:8000' : 
+		// 	`${window.location.origin}/api`;
+			const API_BASE = 'https://ahmedhazemelabady-rock-paper-scissor.hf.space';
+			// const API_BASE = 'http://127.0.0.1:51490';
+
+
 		// Move emojis
 		const moveEmojis = {
 			'rock': '✊',
 			'paper': '✋', 
-			'scissors': '✌️'
+			'scissors': '✌️',
+			'thinking': '🤔',
+			'waiting': '⏳'
 		};
-		
-		// DOM elements
-		const video = document.getElementById('video');
-		const canvas = document.getElementById('bbox-canvas');
-		const ctx = canvas.getContext('2d');
-		const startBtn = document.getElementById('startBtn');
-		const resetBtn = document.getElementById('resetBtn');
-		const roundsInput = document.getElementById('rounds');
-		const status = document.getElementById('status');
-		const playerScoreEl = document.getElementById('playerScore');
-		const computerScoreEl = document.getElementById('computerScore');
-		const currentRoundEl = document.getElementById('currentRound');
-		const lastMoveEl = document.getElementById('lastMove');
-		const computerDisplay = document.getElementById('computerDisplay');
-		const winnerBanner = document.getElementById('winnerBanner');
-		const countdownOverlay = document.getElementById('countdownOverlay');
-		const roundResultOverlay = document.getElementById('roundResultOverlay');
-		
-		// Initialize camera
-		async function initCamera() {
-			try {
-				const stream = await navigator.mediaDevices.getUserMedia({ 
-					video: { facingMode: 'user' } 
-				});
-				video.srcObject = stream;
-				
-				video.addEventListener('loadedmetadata', () => {
-					canvas.width = video.videoWidth;
-					canvas.height = video.videoHeight;
-				});
-				
-				updateStatus('✅ Camera ready! Click "Start Game" to begin.');
-			} catch (err) {
-				console.error('Camera error:', err);
-				updateStatus('❌ Camera access denied. Please allow camera permissions.');
+
+		function updateComputerDisplay(move = null, isThinking = false) {
+			if (isThinking) {
+				computerAnim.textContent = moveEmojis.thinking;
+				computerAnim.style.animation = 'pulse 1s infinite';
+			} else if (move) {
+				computerAnim.textContent = moveEmojis[move] || '🤖';
+				computerAnim.style.animation = 'none';
+			} else {
+				computerAnim.textContent = '🤖';
+				computerAnim.style.animation = 'none';
 			}
 		}
-		
-		// Canvas resizing
-		function resizeCanvas() {
-			const rect = video.getBoundingClientRect();
-			canvas.style.width = rect.width + 'px';
-			canvas.style.height = rect.height + 'px';
-		}
-		
-		window.addEventListener('resize', resizeCanvas);
-		video.addEventListener('loadedmetadata', resizeCanvas);
-		
-		// Bounding box drawing
-		function drawBoundingBox(bbox, confidence, prediction) {
-			if (!bbox) return;
+
+		function drawBoundingBox(box) {
+			if (!box || !overlayCanvas) return;
 			
-			const rect = video.getBoundingClientRect();
-			const scaleX = canvas.width / video.videoWidth;
-			const scaleY = canvas.height / video.videoHeight;
+			const ctx = overlayCanvas.getContext('2d');
+			ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
 			
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			// Get canvas dimensions relative to video
+			const rect = videoEl.getBoundingClientRect();
+			const scaleX = overlayCanvas.width / frameCanvas.width;
+			const scaleY = overlayCanvas.height / frameCanvas.height;
+			
+			// Scale bounding box coordinates
+			const x1 = box.x1 * scaleX;
+			const y1 = box.y1 * scaleY;
+			const x2 = box.x2 * scaleX;
+			const y2 = box.y2 * scaleY;
 			
 			// Draw bounding box
-			ctx.strokeStyle = '#6366f1';
+			ctx.strokeStyle = '#10b981';
 			ctx.lineWidth = 3;
-			ctx.setLineDash([]);
+			ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
 			
-			const x = bbox.x1 * scaleX;
-			const y = bbox.y1 * scaleY;
-			const width = (bbox.x2 - bbox.x1) * scaleX;
-			const height = (bbox.y2 - bbox.y1) * scaleY;
-			
-			ctx.strokeRect(x, y, width, height);
-			
-			// Draw label background
-			ctx.fillStyle = '#6366f1';
-			const labelText = `${prediction} (${Math.round(confidence * 100)}%)`;
-			ctx.font = '16px system-ui';
-			const textWidth = ctx.measureText(labelText).width;
-			ctx.fillRect(x, y - 25, textWidth + 10, 25);
-			
-			// Draw label text
-			ctx.fillStyle = 'white';
-			ctx.fillText(labelText, x + 5, y - 8);
+			// Draw semi-transparent fill
+			ctx.fillStyle = 'rgba(16, 185, 129, 0.2)';
+			ctx.fillRect(x1, y1, x2 - x1, y2 - y1);
 		}
-		
-		// Computer display animations
-		function updateComputerDisplay(text, emoji = null) {
-			if (emoji) {
-				computerDisplay.innerHTML = `
-					<div style="animation: bounce 0.6s ease-in-out;">${emoji}</div>
-					<div style="font-size: 1.5rem; margin-top: 0.5rem;">${text}</div>
-				`;
-			} else {
-				computerDisplay.textContent = text;
+
+		function clearBoundingBox() {
+			if (overlayCanvas) {
+				const ctx = overlayCanvas.getContext('2d');
+				ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
 			}
 		}
-		
-		// Countdown display
+
 		function showCountdown() {
 			return new Promise((resolve) => {
 				countdownOverlay.classList.add('active');
-				let count = COUNTDOWN_DURATION;
+				let count = 3;
 				
-				const countdownNumber = document.getElementById('countdownNumber');
-				countdownNumber.textContent = count;
-				
-				const interval = setInterval(() => {
+				const countInterval = setInterval(() => {
+					countdownNumber.textContent = count;
+					countdownNumber.style.animation = 'none';
+					// Force reflow to restart animation
+					countdownNumber.offsetHeight;
+					countdownNumber.style.animation = 'bounce 1s ease-in-out';
+					
 					count--;
-					if (count > 0) {
-						countdownNumber.textContent = count;
-					} else {
-						countdownNumber.textContent = 'GO!';
-						setTimeout(() => {
-							countdownOverlay.classList.remove('active');
-							clearInterval(interval);
-							resolve();
-						}, 500);
+					
+					if (count < 0) {
+						clearInterval(countInterval);
+						countdownOverlay.classList.remove('active');
+						resolve();
 					}
 				}, 1000);
 			});
 		}
-		
-		// Round result display
-		function showRoundResult(playerMove, computerMove, winner, roundNum) {
-			const title = document.getElementById('roundResultTitle');
-			const playerEmoji = document.getElementById('playerMoveEmoji');
-			const computerEmoji = document.getElementById('computerMoveEmoji');
-			const resultText = document.getElementById('roundResultText');
+
+		function showRoundResult(playerMove, computerMove, winner) {
+			const playerEmoji = moveEmojis[playerMove] || '❓';
+			const computerEmoji = moveEmojis[computerMove] || '❓';
 			
-			title.textContent = `Round ${roundNum} Result`;
-			playerEmoji.textContent = moveEmojis[playerMove] || '❓';
-			computerEmoji.textContent = moveEmojis[computerMove] || '❓';
+			roundResultMoves.textContent = `${playerEmoji} vs ${computerEmoji}`;
 			
-			if (winner === 'player') {
-				resultText.textContent = 'You win this round!';
-				resultText.style.color = '#10b981';
-			} else if (winner === 'computer') {
-				resultText.textContent = 'Computer wins this round!';
-				resultText.style.color = '#ef4444';
-			} else {
-				resultText.textContent = "It's a tie!";
-				resultText.style.color = '#f59e0b';
-			}
+			let winnerText = '';
+			if (winner === 'player') winnerText = 'You Win This Round! 🎉';
+			else if (winner === 'computer') winnerText = 'Computer Wins This Round 🤖';
+			else winnerText = 'Round Tied! 🤝';
+			
+			roundResultWinner.textContent = winnerText;
+			roundResultScore.textContent = `Score: ${playerScoreVal} - ${computerScoreVal}`;
 			
 			roundResultOverlay.classList.add('active');
+			
+			setTimeout(() => {
+				roundResultOverlay.classList.remove('active');
+			}, 2500);
 		}
-		
-		function closeRoundResult() {
-			roundResultOverlay.classList.remove('active');
-		}
-		
-		// Game logic
-		function getComputerMove() {
-			const moves = ['rock', 'paper', 'scissors'];
-			return moves[Math.floor(Math.random() * moves.length)];
-		}
-		
-		function determineWinner(playerMove, computerMove) {
-			if (playerMove === computerMove) return 'tie';
-			
-			const winning = {
-				'rock': 'scissors',
-				'paper': 'rock', 
-				'scissors': 'paper'
-			};
-			
-			return winning[playerMove] === computerMove ? 'player' : 'computer';
-		}
-		
-		async function playRound(playerMove) {
-			if (roundInProgress || !gameActive) return;
-			
-			roundInProgress = true;
-			currentRound++;
-			
-			updateStatus('🎮 Round in progress...');
-			updateComputerDisplay('Thinking...', '🤔');
-			
-			// Show countdown
-			await showCountdown();
-			
-			// Get computer move
-			const computerMove = getComputerMove();
-			updateComputerDisplay(computerMove.toUpperCase(), moveEmojis[computerMove]);
-			
-			// Determine winner
-			const winner = determineWinner(playerMove, computerMove);
-			
-			// Update scores
-			if (winner === 'player') {
-				playerScore++;
-			} else if (winner === 'computer') {
-				computerScore++;
+
+			function updateScoreboard(playerMove, computerMove, winner) {
+				pScore.textContent = playerScoreVal;
+				cScore.textContent = computerScoreVal;
+				roundInfo.textContent = currentRound + '/' + roundsToPlay;
+				pMove.textContent = playerMove || '-';
+				cMove.textContent = computerMove || '-';
+				rWinner.textContent = winner || '-';
 			}
-			
-			// Update display
-			updateScoreboard();
-			lastMoveEl.textContent = moveEmojis[playerMove];
-			
-			// Show round result
-			setTimeout(() => {
-				showRoundResult(playerMove, computerMove, winner, currentRound);
-			}, 1000);
-			
-			// Check if game is over
-			setTimeout(() => {
-				if (currentRound >= maxRounds) {
-					endGame();
-				} else {
-					roundInProgress = false;
-					updateStatus('👀 Show your move to the camera!');
-					updateComputerDisplay('Waiting for your move...', '⏳');
+
+			async function startGame(){
+				roundsToPlay = parseInt(roundsInput.value || '3', 10);
+				currentRound = 1; 
+				playerScoreVal = 0; 
+				computerScoreVal = 0;
+				detectionCooldown = false;
+				updateScoreboard();
+				await initCamera();
+				
+				// Show countdown before starting
+				statusBar.textContent = 'Get ready to play...';
+				btnStart.disabled = true; 
+				btnStop.disabled = false; 
+				btnReset.disabled = false; 
+				roundsInput.disabled = true;
+				
+				await showCountdown();
+				
+				statusBar.textContent = `Round ${currentRound} - Show your move!`;
+				gameActive = true;
+				capturing = true;
+				captureLoop();
+			}
+
+			async function stopGame(){
+				capturing = false; 
+				gameActive = false;
+				detectionCooldown = false;
+				btnStart.disabled = false; 
+				btnStop.disabled = true; 
+				roundsInput.disabled = false;
+				statusBar.textContent = 'Game stopped.';
+				updateComputerDisplay(); // Reset to robot
+				clearBoundingBox();
+				countdownOverlay.classList.remove('active');
+				roundResultOverlay.classList.remove('active');
+			}
+
+			async function resetGame(){
+				capturing = false; 
+				gameActive = false;
+				detectionCooldown = false;
+				currentRound = 1;
+				playerScoreVal = 0;
+				computerScoreVal = 0;
+				statusBar.textContent = 'Game reset. Ready to play.';
+				btnStart.disabled = false; 
+				btnStop.disabled = true; 
+				roundsInput.disabled = false;
+				pScore.textContent = cScore.textContent = '0'; 
+				roundInfo.textContent = '-'; 
+				pMove.textContent = cMove.textContent = rWinner.textContent = '-'; 
+				hideWinner(); 
+				clearConfetti();
+				updateComputerDisplay(); // Reset to robot
+				clearBoundingBox();
+				countdownOverlay.classList.remove('active');
+				roundResultOverlay.classList.remove('active');
+			}
+
+			async function initCamera(){
+				if(!navigator.mediaDevices) { 
+					statusBar.textContent = 'Camera API not supported.'; 
+					return; 
 				}
-			}, 3000);
-		}
-		
-		// Detection function
-		async function detectGesture() {
-			if (!gameActive || roundInProgress || detectionCooldown) return;
-			
-			const now = Date.now();
-			if (now - lastDetectionTime < DETECTION_INTERVAL) return;
-			lastDetectionTime = now;
-			
-			try {
-				// Capture frame from video
-				const canvas = document.createElement('canvas');
-				canvas.width = video.videoWidth;
-				canvas.height = video.videoHeight;
-				const ctx = canvas.getContext('2d');
-				ctx.drawImage(video, 0, 0);
+				const stream = await navigator.mediaDevices.getUserMedia({ video: { width:640, height:480 } });
+				videoEl.srcObject = stream;
+				await new Promise(r => videoEl.onloadedmetadata = r);
 				
-				// Convert to blob
-				const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.8));
+				// Set up canvases
+				frameCanvas.width = videoEl.videoWidth;
+				frameCanvas.height = videoEl.videoHeight;
+				overlayCanvas.width = videoEl.clientWidth;
+				overlayCanvas.height = videoEl.clientHeight;
 				
-				const formData = new FormData();
-				formData.append('file', blob, 'frame.jpg');
-				
-				const res = await fetch(API_BASE + '/detect', { 
-					method: 'POST',
-					body: formData
+				// Resize overlay canvas when video element resizes
+				const resizeObserver = new ResizeObserver(() => {
+					overlayCanvas.width = videoEl.clientWidth;
+					overlayCanvas.height = videoEl.clientHeight;
 				});
-				
-				if (!res.ok) {
-					throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+				resizeObserver.observe(videoEl);
+			}
+
+			async function captureLoop(){
+				if(!capturing) return;
+				try {
+					const ctx = frameCanvas.getContext('2d');
+					ctx.drawImage(videoEl, 0, 0, frameCanvas.width, frameCanvas.height);
+					const b64 = frameCanvas.toDataURL('image/jpeg', 0.7).split(',')[1];
+					
+					const res = await fetch(API_BASE + '/detect', { 
+						method:'POST', 
+						headers:{'Content-Type':'application/json'}, 
+						body: JSON.stringify({ image_base64: b64 }) 
+					});
+					
+					if(res.ok){
+						const data = await res.json();
+						
+						// Show detection info and bounding box
+						if(data.player_move && data.confidence) {
+							currentPlayerMove = data.player_move;
+							statusBar.textContent = `Detected: ${data.player_move} (${(data.confidence * 100).toFixed(1)}%) - Hold for 3 seconds to confirm`;
+							
+							// Draw bounding box if available
+							if(data.bounding_box) {
+								drawBoundingBox(data.bounding_box);
+							}
+							
+							// Only process if we have a confident detection and we're not in cooldown
+							if(data.confidence > 0.6 && !detectionCooldown) {
+								detectionCooldown = true;
+								statusBar.textContent = `Processing round ${currentRound}...`;
+								updateComputerDisplay(null, true); // Show thinking emoji
+								
+								// Wait 3 seconds for user to see result
+								setTimeout(() => {
+									processRound(data.player_move, data.computer_move, data.round_winner);
+								}, 3000);
+							}
+						} else {
+							clearBoundingBox();
+							if(!detectionCooldown) {
+								statusBar.textContent = `Round ${currentRound} - Show your move (rock, paper, or scissors)`;
+								updateComputerDisplay(); // Reset to robot emoji
+							}
+						}
+					} else {
+						clearBoundingBox();
+						statusBar.textContent = 'API connection error';
+					}
+				} catch(e){
+					console.error('Capture error:', e);
+					clearBoundingBox();
+					statusBar.textContent = 'Connection error - Check if API is running';
 				}
 				
-				const data = await res.json();
+				if(capturing) {
+					setTimeout(captureLoop, 500); // Reduced frequency for better UX
+				}
+			}
+			
+			function processRound(playerMove, computerMove, winner) {
+				if(winner === 'player') playerScoreVal++; 
+				else if(winner === 'computer') computerScoreVal++;
 				
-				if (data.prediction && data.confidence >= CONFIDENCE_THRESHOLD) {
-					// Draw bounding box
-					drawBoundingBox(data.bounding_box, data.confidence, data.prediction);
-					
-					// Trigger round
-					detectionCooldown = true;
-					setTimeout(() => { detectionCooldown = false; }, 2000);
-					
-					await playRound(data.prediction);
+				// Show computer's move emoji
+				updateComputerDisplay(computerMove);
+				
+				updateScoreboard(playerMove, computerMove, winner);
+				statusBar.textContent = `Round ${currentRound}: ${playerMove} vs ${computerMove} - ${winner === 'tie' ? 'Tie!' : winner + ' wins!'}`;
+				
+				// Show round result popup
+				showRoundResult(playerMove, computerMove, winner);
+				
+				currentRound++;
+				
+				if(currentRound > roundsToPlay){
+					// Game over
+					setTimeout(async () => {
+						let final;
+						if(playerScoreVal > computerScoreVal) final='player';
+						else if(computerScoreVal > playerScoreVal) final='computer';
+						else final='tie';
+						showWinner(final);
+						capturing = false; 
+						gameActive = false;
+						btnStart.disabled=false; 
+						btnStop.disabled=true; 
+						roundsInput.disabled=false;
+						updateComputerDisplay(); // Reset to robot
+						clearBoundingBox();
+					}, 3000);
 				} else {
-					// Clear canvas if no detection
-					ctx.clearRect(0, 0, canvas.width, canvas.height);
+					// Next round with countdown
+					setTimeout(async () => {
+						detectionCooldown = false;
+						statusBar.textContent = 'Get ready for next round...';
+						updateComputerDisplay(); // Reset to robot for next round
+						clearBoundingBox();
+						
+						// Show countdown for next round
+						await showCountdown();
+						
+						if(capturing) { // Check if game is still active
+							statusBar.textContent = `Round ${currentRound} - Show your move!`;
+						}
+					}, 3000);
 				}
-				
-			} catch (error) {
-				console.error('Detection error:', error);
-				updateStatus(`❌ Detection failed: ${error.message}`);
+			}
+
+		function showWinner(w){
+			let msg = '';
+			if(w==='player') msg = 'You Win! 🎉';
+			else if(w==='computer') msg = 'Computer Wins 🤖';
+			else msg = 'Tie Game';
+			winnerText.textContent = msg;
+			winnerModal.classList.add('active');
+			launchConfetti();
+		}
+		function hideWinner(){ winnerModal.classList.remove('active'); }
+
+		function launchConfetti(){
+			clearConfetti();
+			const colors=['#6366f1','#10b981','#f59e0b','#ef4444','#3b82f6','#ec4899'];
+			for(let i=0;i<120;i++){
+				const d=document.createElement('div');
+				d.style.position='absolute';
+				d.style.top='-5vh';
+				d.style.left=Math.random()*100+'%';
+				const size=6+Math.random()*8;
+				d.style.width=size+'px';
+				d.style.height=size*0.4+'px';
+				d.style.background=colors[i%colors.length];
+				d.style.opacity='0.9';
+				d.style.transform=`rotate(${Math.random()*360}deg)`;
+				d.style.borderRadius='2px';
+				d.style.animation=`fall ${3+Math.random()*3}s linear forwards`;
+				d.style.setProperty('--rot', (Math.random()>0.5?'' : '-') + (90+Math.random()*180)+'deg');
+				confettiBox.appendChild(d);
 			}
 		}
-		
-		// Game control functions
-		function startGame() {
-			maxRounds = parseInt(roundsInput.value) || 3;
-			playerScore = 0;
-			computerScore = 0;
-			currentRound = 0;
-			gameActive = true;
-			roundInProgress = false;
-			
-			updateScoreboard();
-			updateStatus('👀 Show your move to the camera!');
-			updateComputerDisplay('Waiting for your move...', '⏳');
-			
-			startBtn.disabled = true;
-			roundsInput.disabled = true;
-			
-			// Start detection loop
-			const detectionLoop = setInterval(() => {
-				if (!gameActive) {
-					clearInterval(detectionLoop);
-					return;
+		function clearConfetti(){ confettiBox.innerHTML=''; }
+
+		btnStart.addEventListener('click', startGame);
+		btnStop.addEventListener('click', stopGame);
+		btnReset.addEventListener('click', resetGame);
+
+			async function health(){
+				try { 
+					const r = await fetch(API_BASE + '/health'); 
+					if(r.ok) {
+						const d = await r.json(); 
+						modelStatus.textContent = d.model_loaded ? 'Ready' : 'Loading';
+						deviceInfo.textContent = d.model_exists ? 'Model Found' : 'Model Missing';
+					} else {
+						modelStatus.textContent = 'API Error';
+						deviceInfo.textContent = 'Unavailable';
+					}
+				} catch(e){ 
+					modelStatus.textContent = 'Unavailable';
+					deviceInfo.textContent = 'Check API';
+					console.error('Health check failed:', e);
 				}
-				detectGesture();
-			}, 100);
-		}
-		
-		function resetGame() {
-			gameActive = false;
-			roundInProgress = false;
-			playerScore = 0;
-			computerScore = 0;
-			currentRound = 0;
-			
-			updateScoreboard();
-			updateStatus('Click "Start Game" to begin. Make sure your camera is working!');
-			updateComputerDisplay('Ready to play!');
-			
-			startBtn.disabled = false;
-			roundsInput.disabled = false;
-			
-			// Clear canvas
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
-			lastMoveEl.textContent = '-';
-			
-			// Close any open overlays
-			winnerBanner.classList.remove('active');
-			countdownOverlay.classList.remove('active');
-			roundResultOverlay.classList.remove('active');
-		}
-		
-		function endGame() {
-			gameActive = false;
-			roundInProgress = false;
-			
-			const finalWinner = playerScore > computerScore ? 'player' : 
-							  computerScore > playerScore ? 'computer' : 'tie';
-			
-			// Show winner banner
-			setTimeout(() => {
-				showWinnerBanner(finalWinner);
-				// Auto-reset after showing winner
-				setTimeout(resetGame, 5000);
-			}, 1000);
-		}
-		
-		function updateScoreboard() {
-			playerScoreEl.textContent = playerScore;
-			computerScoreEl.textContent = computerScore;
-			currentRoundEl.textContent = currentRound;
-		}
-		
-		function updateStatus(message) {
-			status.textContent = message;
-		}
-		
-		function showWinnerBanner(winner) {
-			const winnerText = document.getElementById('winnerText');
-			const winnerSubtext = document.getElementById('winnerSubtext');
-			
-			if (winner === 'player') {
-				winnerText.textContent = '🎉 You Win!';
-				createConfetti();
-			} else if (winner === 'computer') {
-				winnerText.textContent = '🤖 Computer Wins!';
-			} else {
-				winnerText.textContent = '🤝 It\'s a Tie!';
 			}
-			
-			winnerSubtext.textContent = `Final score: ${playerScore}-${computerScore}`;
-			winnerBanner.classList.add('active');
-		}
-		
-		function closeWinnerBanner() {
-			winnerBanner.classList.remove('active');
-			resetGame();
-		}
-		
-		function createConfetti() {
-			const confetti = document.getElementById('confetti');
-			confetti.innerHTML = '';
-			
-			const colors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
-			
-			for (let i = 0; i < 50; i++) {
-				const piece = document.createElement('div');
-				piece.style.cssText = `
-					position: absolute;
-					width: 10px;
-					height: 10px;
-					background: ${colors[Math.floor(Math.random() * colors.length)]};
-					left: ${Math.random() * 100}%;
-					animation: fall ${2 + Math.random() * 3}s linear forwards;
-					--rot: ${Math.random() * 360}deg;
-				`;
-				confetti.appendChild(piece);
-			}
-		}
-		
-		// API health check
-		async function checkAPI() {
-			try {
-				const r = await fetch(API_BASE + '/health'); 
-				const data = await r.json();
-				console.log('API Status:', data);
-				if (!data.model_loaded) {
-					updateStatus('⚠️ API model not loaded. Please wait...');
-				}
-			} catch (err) {
-				console.error('API Error:', err);
-				updateStatus('❌ Cannot connect to API. Please check your internet connection.');
-			}
-		}
-		
-		// Event listeners
-		startBtn.addEventListener('click', startGame);
-		resetBtn.addEventListener('click', resetGame);
-		
-		// Initialize
-		initCamera();
-		checkAPI();
+			health();
+			setInterval(health, 5000);
 	</script>
 </body>
 </html>
